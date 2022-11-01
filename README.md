@@ -1,3 +1,5 @@
+![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/ZenSepiol/Dockerized-Dear-ImGui/Docker%20Image%20CI/main)
+
 # Dockerized-Dear-ImGui
 This repository is designed for an easy-to-use and portable way to use Dear ImGui. It contains [Dear ImGui](https://github.com/ocornut/imgui) and [ImPlot](https://github.com/epezent/implot). 
 The application is compiled and run inside a docker container. During the execution of the application, the X-server of the host system is connected and the output display is forwarded to the host system.
