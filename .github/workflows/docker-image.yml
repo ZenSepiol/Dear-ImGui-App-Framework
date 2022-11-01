@@ -1,0 +1,22 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+      run: docker-compose build 
+    - name: Setup the build directory
+      run: sudo docker-compose run console meson setup builddir /code --native-file=native.build
+    - name: Build the application
+      run: sudo docker-compose run console ninja -C builddir
+    - name: Run the tests
+      run: sudo docker-compose run console ninja -C builddir test
