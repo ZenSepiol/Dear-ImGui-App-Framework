@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  console:
+    image: my-app:latest
+    build: .
+    volumes:
+      - .:/code
+    working_dir: /code
+    #entrypoint: meson setup builddir /code --native-file=native.build
+  gui:
+    image: my-app:latest
+    build: .
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - .:/code
+    working_dir: /code
+    network_mode: host
+    entrypoint: ./builddir/app

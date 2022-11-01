@@ -1,0 +1,14 @@
+[constants]
+
+[built-in options]
+c_std = 'c17'
+cpp_std = 'c++20'
+optimization = '3'
+
+[binaries]
+c = '/usr/bin/clang'
+cpp = '/usr/bin/clang++'
+
+[cmake]
+CMAKE_C_COMPILER    = '/usr/bin/clang'
+CMAKE_CXX_COMPILER  = '/usr/bin/clang++'
