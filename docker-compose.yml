@@ -7,7 +7,7 @@ services:
     volumes:
       - .:/code
     working_dir: /code
-    #entrypoint: meson setup builddir /code --native-file=native.build
+    # entrypoint: meson setup builddir /code --native-file=native.build
   gui:
     image: my-app:latest
     build: .
@@ -16,6 +16,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - .:/code
+      - $HOME/.Xauthority:/root/.Xauthority:rw
     working_dir: /code
     network_mode: host
     entrypoint: ./builddir/app
