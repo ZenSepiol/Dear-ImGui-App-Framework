@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:22.10
 
 RUN apt-get update
 RUN apt-get install -y bash
@@ -10,5 +10,5 @@ RUN apt-get install -y meson
 RUN apt-get install -y clang
 RUN apt-get install -y git
 
-RUN git clone https://github.com/ocornut/imgui.git imgui
-RUN git clone https://github.com/epezent/implot implot
+RUN git clone --depth 1 --branch v1.88 https://github.com/ocornut/imgui.git imgui
+RUN git clone --depth 1 --branch v0.14 https://github.com/epezent/implot.git implot
