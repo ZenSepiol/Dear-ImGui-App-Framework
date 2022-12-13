@@ -6,6 +6,8 @@ The application is compiled and run inside a docker container. During the execut
 
 **The only requirement to run the sample project is docker and a Debian based Linux environment (e.g. Ubuntu) that runs X-server.**
 
+If you have problems getting the error message `Glfw Error 65544: X11: Failed to open display :0` try running `xhost +` first in your console.
+
 ## Getting started
 These are the commands required to build and run the sample application:
 ```
@@ -13,25 +15,25 @@ These are the commands required to build and run the sample application:
 sudo snap install docker
 
 # Prepare the image
-sudo docker-compose build
+sudo docker compose build
 
 # Setup the build directory
-sudo docker-compose run console meson setup builddir /code --native-file=native.build
+sudo docker compose run console meson setup builddir /code --native-file=native.build
 
 # Compile the application
-sudo docker-compose run console ninja -C builddir
+sudo docker compose run console ninja -C builddir
 
 # Run the application
-sudo docker-compose run gui builddir/app
+sudo docker compose run gui builddir/app
 
 # Run tests
-sudo docker-compose run console ninja -C builddir test
+sudo docker compose run console ninja -C builddir test
 
 # Useful aliases
-alias setup="sudo docker-compose run console meson setup builddir /code --native-file=native.build"
-alias build="sudo docker-compose run console ninja -C builddir"
-alias run="sudo docker-compose run gui builddir/app"
-alias test="sudo docker-compose run console ninja -C builddir test"
+alias setup="sudo docker compose run console meson setup builddir /code --native-file=native.build"
+alias build="sudo docker compose run console ninja -C builddir"
+alias run="sudo docker compose run gui builddir/app"
+alias test="sudo docker compose run console ninja -C builddir test"
 ```
 
 The sample application is stored in [app.hpp](src/app.hpp) and can be extended.
