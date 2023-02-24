@@ -45,9 +45,12 @@ class CurlWrapper
         return res;
     }
 
-  public:
-    std::string response;
+    std::string GetResponse()
+    {
+        return response;
+    }
 
   private:
     CURL* curl;
+    std::string response;
 };

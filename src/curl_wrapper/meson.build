@@ -1,6 +1,5 @@
 
 test_files = files(
-    'curl_wrapper.cpp',
     'curl_wrapper_test.cpp',
     'test_main.cpp'
 )
