@@ -1,10 +1,17 @@
+#include "date.h"
 #include <chrono>
 #include <iostream>
+#include <map>
+#include <regex>
+#include <sstream>
+#include <string>
 #include <vector>
+
+using namespace std::chrono;
 
 class SpotData
 {
-    class TradingValues
+    struct TradingValues
     {
         double open;
         double close;
@@ -15,43 +22,43 @@ class SpotData
   public:
     SpotData(const std::string& csv_data)
     {
-        parseCSV();
+        ParseCSV(csv_data);
     }
 
   private:
-    void parseCSV(const std::string& csv_data)
+    void ParseCSV(const std::string& csv_data)
     {
-        std::istringstream csvStream(csv_data);
+        std::istringstream csv_stream(csv_data);
         std::string line;
 
         // Remove the header line
-        std::getline(csvStream, line);
+        std::getline(csv_stream, line);
 
-        while (std::getline(csvStream, line))
+        while (std::getline(csv_stream, line))
         {
             // Split line delimited by comma separator into a vector
-            std::vector<std::string> spotVector;
-            std::stringstream iss(line);
-            std::string lineItem;
-            while (std::getline(iss, lineItem, ','))
-            {
-                spotVector.push_back(lineItem);
-            }
+            const std::regex regex{"((?:[^\\\\,]|\\\\.)*?)(?:,|$)"};
+            std::vector<std::string> vector{std::sregex_token_iterator(line.begin(), line.end(), regex, 1),
+                                            std::sregex_token_iterator()};
 
-            if (spotVector[0] != "null" && spotVector[1] != "null")
+            if (vector[0] != "null" && vector[1] != "null")
             {
-                timepoint = spotVector[0]
+                // Will parse the string of the time as timepoint (e.g. "%Y-%m-%d")
+                std::istringstream in{vector[0]};
+                system_clock::time_point timepoint;
+                in >> date::parse("%F", timepoint);
 
                 TradingValues values;
-                values.open = std::atof(spotVector[1].c_str());
-                values.high = std::atof(spotVector[2].c_str());
-                values.low = std::atof(spotVector[3].c_str());
-                values.close = std::atof(spotVector[4].c_str());
+                values.open  = std::stod(vector[1]);
+                values.high  = std::stod(vector[2]);
+                values.low   = std::stod(vector[3]);
+                values.close = std::stod(vector[4]);
 
-                spots.emplace_back(timepoint, values);
+                spots.emplace(timepoint, values);
             }
         }
     }
 
-    std::map<time_point, TradingValues> spots;
+  public:
+    std::map<system_clock::time_point, TradingValues> spots;
 };

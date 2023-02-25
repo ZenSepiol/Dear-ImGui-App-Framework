@@ -9,7 +9,7 @@ curl_lib = dependency('libcurl')
 
 subdir('src/sample_module')
 subdir('src/curl_wrapper')
-
+subdir('src/spot_data')
 
 app_files = files(
     'src/main.cpp',
