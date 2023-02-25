@@ -28,12 +28,15 @@ sudo docker compose run gui builddir/app
 
 # Run tests
 sudo docker compose run console ninja -C builddir test
+sudo docker compose run console meson test -C builddir -v `test_name`
 
 # Useful aliases
 alias setup="sudo docker compose run console meson setup builddir /code --native-file=native.build"
+alias console="sudo docker compose run console"
 alias build="sudo docker compose run console ninja -C builddir"
 alias run="sudo docker compose run gui builddir/app"
-alias test="sudo docker compose run console ninja -C builddir test"
+alias all_tests="sudo docker compose run console ninja -C builddir test"
+alias test="sudo docker compose run console meson test -C builddir -v"
 ```
 
 The sample application is stored in [app.hpp](src/app.hpp) and can be extended.
@@ -55,3 +58,19 @@ The framework itself can be found [here](src/app_base/app_base.hpp). It includes
 An example of a app based on the framework can be found [here](src/app.hpp). In order to develop a custom app, usually it is only required to adapt `app.hpp`. Additional source files that need compilation can be added in the [meson application description](meson.build).
 
 Since it is often useful to have additional classes and tests for them, the testing framework CATCH2 is already included. An example of how to create an module and write tests is available [here](src/sample_module/). It is important to add the subdirectory to the [meson.build](meson.build) file in the root directory.
+
+
+It's also possible to run without using `xhost +` by adding this snippet to the dockerfile:
+```
+RUN export uid=1000 gid=1000 && \
+    mkdir -p /home/developer && \
+    echo "developer:x:${uid}:${gid}:Developer,,,:/home/developer:/bin/bash" >> /etc/passwd && \
+    echo "developer:x:${uid}:" >> /etc/group && \
+    mkdir -p /etc/sudoers.d && \
+    echo "developer ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/developer && \
+    chmod 0440 /etc/sudoers.d/developer && \
+    chown ${uid}:${gid} -R /home/developer
+
+USER developer
+ENV HOME /home/developer
+```
