@@ -185,7 +185,7 @@ class AppBase
         static_cast<Derived*>(this)->Update();
     }
 
-    virtual void StartUp()
+    void StartUp()
     {
         static_cast<Derived*>(this)->StartUp();
     }
