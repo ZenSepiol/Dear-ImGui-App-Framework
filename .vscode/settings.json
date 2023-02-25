@@ -74,9 +74,18 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
-        "unordered_set": "cpp"
+        "unordered_set": "cpp",
+        "csignal": "cpp",
+        "strstream": "cpp",
+        "complex": "cpp",
+        "forward_list": "cpp",
+        "list": "cpp",
+        "span": "cpp",
+        "cfenv": "cpp",
+        "typeindex": "cpp",
+        "*.ipp": "cpp"
     },
 
-    "C_Cpp.errorSquiggles": "Disabled",
-    "C_Cpp.intelliSenseEngineFallback": "Enabled",
+    "C_Cpp.errorSquiggles": "disabled",
+    "C_Cpp.intelliSenseEngineFallback": "enabled",
 }
