@@ -1,4 +1,4 @@
-![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/ZenSepiol/Dockerized-Dear-ImGui/Docker%20Image%20CI/main)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/ZenSepiol/Dockerized-Dear-ImGui/docker-image.yml?branch=main)
 
 # Dockerized-Dear-ImGui
 This repository is designed for an easy-to-use and portable way to use Dear ImGui. It contains [Dear ImGui](https://github.com/ocornut/imgui) and [ImPlot](https://github.com/epezent/implot).
