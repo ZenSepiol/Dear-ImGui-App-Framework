@@ -12,31 +12,31 @@ If you have problems getting the error message `Glfw Error 65544: X11: Failed to
 These are the commands required to build and run the sample application:
 ```
 # Install docker
-sudo snap install docker
+snap install docker
 
 # Prepare the image
-sudo docker compose build
+docker compose build
 
 # Setup the build directory
-sudo docker compose run console meson setup builddir /code --native-file=native.build
+docker compose run console meson setup builddir /code --native-file=native.build
 
 # Compile the application
-sudo docker compose run console ninja -C builddir
+docker compose run console ninja -C builddir
 
 # Run the application
-sudo docker compose run gui builddir/app
+docker compose run gui builddir/app
 
 # Run tests
-sudo docker compose run console ninja -C builddir test
-sudo docker compose run console meson test -C builddir -v `test_name`
+docker compose run console ninja -C builddir test
+docker compose run console meson test -C builddir -v `test_name`
 
 # Useful aliases
-alias setup="sudo docker compose run console meson setup builddir /code --native-file=native.build"
-alias console="sudo docker compose run console"
-alias build="sudo docker compose run console ninja -C builddir"
-alias run="sudo docker compose run gui builddir/app"
-alias all_tests="sudo docker compose run console ninja -C builddir test"
-alias test="sudo docker compose run console meson test -C builddir -v"
+alias setup="docker compose run console meson setup builddir /code --native-file=native.build"
+alias console="docker compose run console"
+alias build="docker compose run console ninja -C builddir"
+alias run="docker compose run gui builddir/app"
+alias all_tests="docker compose run console ninja -C builddir test"
+alias test="docker compose run console meson test -C builddir -v"
 ```
 
 The sample application is stored in [app.hpp](src/app.hpp) and can be extended.
