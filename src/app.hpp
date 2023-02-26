@@ -14,6 +14,7 @@ class App : public AppBase<App>
     // Anything that needs to be called cyclically INSIDE of the main application loop
     void Update()
     {
+        ImGui::ShowDemoWindow();
     }
 
     // The callbacks are updated and called BEFORE the Update loop is entered
