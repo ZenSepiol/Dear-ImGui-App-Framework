@@ -20,6 +20,7 @@ class SpotData
     };
 
   public:
+    SpotData(){};
     SpotData(const std::string& csv_data)
     {
         ParseCSV(csv_data);
