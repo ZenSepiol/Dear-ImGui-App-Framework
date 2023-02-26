@@ -6,7 +6,17 @@ The application is compiled and run inside a docker container. During the execut
 
 **The only requirement to run the sample project is docker and a Debian based Linux environment (e.g. Ubuntu) that runs X-server.**
 
+# Troubleshooting
 If you have problems getting the error message `Glfw Error 65544: X11: Failed to open display :0` try running `xhost +` first in your console.
+
+If you do not want to share the X server to the host, it is possible to disable the MIT-SHM support for the X server by creating a file
+`/etc/X11/xorg.conf.d/disable-MIT-SHM.conf` with the content.
+```
+Section "Extensions"
+    Option "MIT-SHM" "Disable"
+EndSection
+```
+Afterwards it is possible to remove `network_mode: host` from the `docker-compose.yml`.
 
 ## Getting started
 These are the commands required to build and run the sample application:
