@@ -1,15 +1,7 @@
 FROM ubuntu:22.04
 
 RUN apt-get update
-RUN apt-get install -y bash
-RUN apt-get install -y libglfw3
-RUN apt-get install -y libglfw3-dev
-RUN apt-get install -y xorg-dev
-RUN apt-get install -y libxkbcommon-dev
-RUN apt-get install -y meson
-RUN apt-get install -y clang
-RUN apt-get install -y git
-RUN apt-get install -y libssl-dev
+RUN apt-get install -y bash libglfw3 libglfw3-dev xorg-dev libxkbcommon-dev meson clang git cmake libssl-dev cmake
 
 RUN apt-get install --yes --no-install-recommends wget build-essential libcurl4 && \
     wget https://curl.se/download/curl-7.81.0.tar.gz && \
