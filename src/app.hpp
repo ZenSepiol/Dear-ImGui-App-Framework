@@ -37,18 +37,18 @@ class App : public AppBase<App>
         if (ImGui::TreeNode("Input Data"))
         {
             ImGui::InputText("Starting Date", starting_date, 64);
-            ImGui::Text("Parsed Starting Date");
-            ImGui::Text(date::format("%Y-%m-%d", starting_tp).c_str());
+            // ImGui::Text("Parsed Starting Date");
+            // ImGui::Text(date::format("%Y-%m-%d", starting_tp).c_str());
             ImGui::Separator();
 
             ImGui::InputText("Ending date", ending_date, 64);
-            ImGui::Text("Parsed Ending Date");
-            ImGui::Text(date::format("%Y-%m-%d", ending_tp).c_str());
+            // ImGui::Text("Parsed Ending Date");
+            // ImGui::Text(date::format("%Y-%m-%d", ending_tp).c_str());
             ImGui::Separator();
 
             ImGui::InputText("Symbol", symbol, 64);
-            ImGui::Text("Parsed Symbol");
-            ImGui::Text(symbol_str.c_str());
+            // ImGui::Text("Parsed Symbol");
+            // ImGui::Text(symbol_str.c_str());
             ImGui::Separator();
 
             if (ImGui::Button("Parse Input"))
@@ -56,8 +56,12 @@ class App : public AppBase<App>
             ImGui::TreePop();
         }
 
-        if (ImPlot::BeginPlot("Graph"))
+        if (ImPlot::BeginPlot("Graph", ImVec2(-1, -1), ImPlotFlags_NoLegend))
         {
+            ImVec4 red           = ImVec4(0.000f, 1.000f, 0.441f, 1.000f);
+            ImVec4 green         = ImVec4(0.853f, 0.050f, 0.310f, 1.000f);
+            double width_percent = 0.25;
+
             ImPlot::SetupAxis(ImAxis_X1, "Date", ImPlotAxisFlags_AutoFit);
             ImPlot::SetupAxis(ImAxis_Y1, "Value", ImPlotAxisFlags_AutoFit);
             ImPlot::SetupAxisFormat(ImAxis_Y1, "$%.0f");
@@ -65,57 +69,40 @@ class App : public AppBase<App>
 
             // get ImGui window DrawList
             ImDrawList* draw_list = ImPlot::GetPlotDrawList();
-            // calc real value width
-            double width_percent = 0.5;
-            int count            = spot_data.spots.size();
-            ImVec4 bullCol       = ImVec4(0.000f, 1.000f, 0.441f, 1.000f);
-            ImVec4 bearCol       = ImVec4(0.853f, 0.050f, 0.310f, 1.000f);
 
-            auto start_it     = spot_data.spots.begin();
-            auto second_it    = std::next(start_it, 1);
-            double half_width = count > 1
-                                    ? (std::chrono::duration_cast<std::chrono::seconds>(
-                                           start_it->first.time_since_epoch() - second_it->first.time_since_epoch()))
-                                              .count() *
-                                          width_percent
-                                    : width_percent;
+            auto conv = [](const system_clock::time_point& tp) {
+                return duration_cast<seconds>(tp.time_since_epoch()).count();
+            };
+
+            int count      = spot_data.spots.size();
+            auto start_it  = spot_data.spots.begin();
+            auto second_it = std::next(start_it, 1);
+            double half_width =
+                count > 1 ? (conv(start_it->first) - conv(second_it->first)) * width_percent : width_percent;
 
             if (ImPlot::BeginItem("Graph"))
             {
-                // override legend icon color
-                ImPlot::GetCurrentItem()->Color = IM_COL32(64, 64, 64, 255);
-                // fit data if requested
+                // ImPlot::GetCurrentItem()->Color = IM_COL32(64, 64, 64, 255);
                 if (ImPlot::FitThisFrame())
                 {
                     for (const auto& [key, value] : spot_data.spots)
                     {
-                        ImPlot::FitPoint(ImPlotPoint(
-                            std::chrono::duration_cast<std::chrono::seconds>(key.time_since_epoch()).count(),
-                            value.low));
-                        ImPlot::FitPoint(ImPlotPoint(
-                            std::chrono::duration_cast<std::chrono::seconds>(key.time_since_epoch()).count(),
-                            value.high));
+                        ImPlot::FitPoint(ImPlotPoint(conv(key), value.low));
+                        ImPlot::FitPoint(ImPlotPoint(conv(key), value.high));
                     }
                 }
-                // render data
+
                 for (const auto& [key, value] : spot_data.spots)
                 {
-                    ImVec2 open_pos = ImPlot::PlotToPixels(
-                        std::chrono::duration_cast<std::chrono::seconds>(key.time_since_epoch()).count() - half_width,
-                        value.open);
-                    ImVec2 close_pos = ImPlot::PlotToPixels(
-                        std::chrono::duration_cast<std::chrono::seconds>(key.time_since_epoch()).count() + half_width,
-                        value.close);
-                    ImVec2 low_pos = ImPlot::PlotToPixels(
-                        std::chrono::duration_cast<std::chrono::seconds>(key.time_since_epoch()).count(), value.low);
-                    ImVec2 high_pos = ImPlot::PlotToPixels(
-                        std::chrono::duration_cast<std::chrono::seconds>(key.time_since_epoch()).count(), value.high);
-                    ImU32 color = ImGui::GetColorU32(value.open > value.close ? bearCol : bullCol);
+                    ImVec2 open_pos  = ImPlot::PlotToPixels(conv(key) - half_width, value.open);
+                    ImVec2 close_pos = ImPlot::PlotToPixels(conv(key) + half_width + 1, value.close);
+                    ImVec2 low_pos   = ImPlot::PlotToPixels(conv(key), value.low);
+                    ImVec2 high_pos  = ImPlot::PlotToPixels(conv(key), value.high);
+                    ImU32 color      = ImGui::GetColorU32(value.open > value.close ? green : red);
                     draw_list->AddLine(low_pos, high_pos, color);
                     draw_list->AddRectFilled(open_pos, close_pos, color);
                 }
 
-                // end plot item
                 ImPlot::EndItem();
             }
             ImPlot::EndPlot();
@@ -178,8 +165,8 @@ class App : public AppBase<App>
     }
 
   private:
-    char starting_date[64] = "2022-12-01";
-    char ending_date[64]   = "2022-12-31";
+    char starting_date[64] = "2023-01-01";
+    char ending_date[64]   = "2023-02-27";
     char symbol[64]        = "^GSPC";
 
     system_clock::time_point starting_tp;
