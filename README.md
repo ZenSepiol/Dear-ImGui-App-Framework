@@ -34,7 +34,7 @@ docker compose run console meson setup builddir /code --native-file=native.build
 docker compose run console ninja -C builddir
 
 # Run the application
-docker compose run gui builddir/app
+docker compose run gui builddir/app/sample_app/sample_app
 
 # Run tests
 docker compose run console ninja -C builddir test
@@ -44,7 +44,7 @@ docker compose run console meson test -C builddir -v `test_name`
 alias setup="docker compose run console meson setup builddir /code --native-file=native.build"
 alias console="docker compose run console"
 alias build="docker compose run console ninja -C builddir"
-alias run="docker compose run gui builddir/app"
+alias run="docker compose run gui"
 alias all_tests="docker compose run console ninja -C builddir test"
 alias test="docker compose run console meson test -C builddir -v"
 ```

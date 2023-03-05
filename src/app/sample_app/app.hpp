@@ -1,4 +1,7 @@
 #include "app_base/app_base.hpp"
+#include "implot_internal.h"
+#include <iostream>
+#include <string>
 
 class App : public AppBase<App>
 {
@@ -48,4 +51,6 @@ class App : public AppBase<App>
         {
         }
     }
+
+  private:
 };
