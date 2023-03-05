@@ -19,4 +19,3 @@ services:
       - $HOME/.Xauthority:/root/.Xauthority:rw
     working_dir: /code
     network_mode: host
-    entrypoint: ./builddir/app
