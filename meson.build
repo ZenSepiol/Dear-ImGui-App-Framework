@@ -8,3 +8,8 @@ catch_lib = subproject('catch2').get_variable('catch2_dep')
 
 subdir('src/app/sample_app')
 subdir('src/app/stock_market_app')
+subdir('src/app/tetris')
+subdir('src/app/roombot')
+subdir('src/app/clock')
+subdir('src/app/multithreading')
+subdir('src/app/tictactoe')
