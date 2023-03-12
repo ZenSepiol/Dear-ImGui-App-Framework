@@ -132,8 +132,8 @@ class AppBase
         ImGui_ImplOpenGL3_Init(glsl_version);
 
         // Add custom fonts
-        ImGuiIO& io = ImGui::GetIO();
-        io.Fonts->AddFontFromFileTTF("../../../imgui/misc/fonts/Roboto-Medium.ttf", 18.0f);
+        // ImGuiIO& io = ImGui::GetIO();
+        // io.Fonts->AddFontFromFileTTF("../../../imgui/misc/fonts/Roboto-Medium.ttf", 18.0f);
     }
 
     virtual ~AppBase()

@@ -1,6 +1,7 @@
 {
     // Sets the font family
     "editor.fontFamily": "'source code pro'",
+    "workbench.editor.showTabs": false,
     // Sets the line height
     "editor.lineHeight": 18,
 

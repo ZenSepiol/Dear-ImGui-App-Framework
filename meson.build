@@ -1,6 +1,6 @@
 project('App Framework with Dear ImGui', 'cpp')
 
-incdir = include_directories('/imgui/backends', '/implot', '/imgui', 'src/lib')
+incdir = include_directories('imgui/backends', 'implot', 'imgui', 'src/lib')
 
 glfw_lib = subproject('glfw').get_variable('glfw_dep')
 gl = dependency('gl')
