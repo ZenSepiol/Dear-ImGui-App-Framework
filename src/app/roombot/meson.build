@@ -1,14 +1,5 @@
-files = files(
+app_files = files(
     'main.cpp',
-    '../../../imgui/imgui.cpp',
-    '../../../imgui/imgui_draw.cpp',
-    '../../../imgui/imgui_tables.cpp',
-    '../../../imgui/imgui_demo.cpp',
-    '../../../imgui/imgui_widgets.cpp',
-    '../../../imgui/backends/imgui_impl_glfw.cpp',
-    '../../../imgui/backends/imgui_impl_opengl3.cpp',
-    '../../../implot/implot.cpp',
-    '../../../implot/implot_items.cpp'
 )
 
-executable('roombot', files, include_directories : incdir, dependencies : [glfw_lib, gl] )
+executable('roombot', app_files + gui_files, include_directories : incdir, dependencies : [glfw_lib, gl] )
