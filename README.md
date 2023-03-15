@@ -20,10 +20,17 @@ Afterwards it is possible to remove `network_mode: host` from the `docker-compos
 
 ## Getting started
 These are the commands required to build and run the sample application:
-```
-# Install docker
-snap install docker
 
+### Install docker
+To install docker you can find more information [here](https://docs.docker.com/engine/install/ubuntu/)
+
+Using the install script allows easy installation of docker.
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh ./get-docker.sh --dry-run
+```
+Afterwards 
+```
 # Prepare the image
 docker compose build
 
