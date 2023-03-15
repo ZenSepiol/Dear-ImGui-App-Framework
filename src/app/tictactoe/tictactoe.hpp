@@ -190,8 +190,8 @@ class TicTacToe : public AppBase<TicTacToe>
   private:
     std::array<std::array<CellState, 3>, 3> game_state = {
         {{{CellState::Empty, CellState::Empty, CellState::Empty}},
-         {{CellState::Cross, CellState::Cross, CellState::Cross}},
-         {{CellState::Circle, CellState::Circle, CellState::Circle}}}};
+         {{CellState::Empty, CellState::Empty, CellState::Empty}},
+         {{CellState::Empty, CellState::Empty, CellState::Empty}}}};
 
     static int mouse_x;
     static int mouse_y;
