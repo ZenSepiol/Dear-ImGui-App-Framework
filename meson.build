@@ -18,10 +18,11 @@ gui_files = files(
     '/implot/implot_items.cpp'
 )
 
+subdir('src/app/clock')
+subdir('src/app/long_task')
+subdir('src/app/multithreading')
+subdir('src/app/roombot')
 subdir('src/app/sample_app')
 subdir('src/app/stock_market_app')
 subdir('src/app/tetris')
-subdir('src/app/roombot')
-subdir('src/app/clock')
-subdir('src/app/multithreading')
 subdir('src/app/tictactoe')
