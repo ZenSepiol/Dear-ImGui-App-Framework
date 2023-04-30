@@ -1,5 +1,6 @@
 #include "app_base/app_base.hpp"
 #include "implot_internal.h"
+#include <future>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -48,13 +49,20 @@ class App : public AppBase<App>
         }
 
         if (ImGui::Button("Long Calculation"))
-            my_result = MyCalculation();
-        ImGui::Text("My result is: %i", my_result);
+            future_result = std::async(std::launch::async, &App::MyCalculation, this);
+
+        if (future_result.valid())
+            if (future_result.wait_for(std::chrono::milliseconds(1)) == std::future_status::ready)
+                last_result = future_result.get();
+
+        ImGui::Text("My result is: %i", last_result);
 
         if (ImPlot::BeginSubplots("", 1, 1, ImVec2(1200, 800)))
         {
             if (ImPlot::BeginPlot(""))
             {
+                ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 5.f);
+
                 ImPlot::SetupAxis(ImAxis_X1, "Frame Number", ImPlotAxisFlags_AutoFit);
                 ImPlot::SetupAxis(ImAxis_Y1, "Frame Rate");
                 ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 100);
@@ -63,6 +71,8 @@ class App : public AppBase<App>
                 std::generate(local_samples.begin(), local_samples.end(), [n = 0]() mutable { return 1.0 * n++; });
                 ImPlot::PlotLine("Frame Rate", local_samples.data(), frame_times.data(), frame_times.size());
                 ImPlot::EndPlot();
+
+                ImPlot::PopStyleVar(ImPlotStyleVar_LineWeight);
             }
             ImPlot::EndSubplots();
         }
@@ -104,5 +114,6 @@ class App : public AppBase<App>
 
   private:
     std::vector<float> frame_times;
-    int my_result = 0;
+    int last_result = 0;
+    std::future<int> future_result;
 };
