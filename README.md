@@ -70,11 +70,11 @@ Docker compose is used to setup two different services using the same docker ima
 The dockerfile provided creates an image including all necessary dependencies. If additional dependencies are introduced, it is necessary to adapt the [dockerfile](Dockerfile) (docker image) accordingly.
 
 ### Dear ImGui Usage and Code Structure
-The framework itself can be found [here](src/app_base/app_base.hpp). It includes the necessary backend calls to GLFW as well as OpenGL. The color schemes and the window handler are also part of the framework. They can be overriden or adapted as needed.
+The framework itself can be found [here](src/lib/app_base/app_base.hpp). It includes the necessary backend calls to GLFW as well as OpenGL. The color schemes and the window handler are also part of the framework. They can be overriden or adapted as needed.
 
-An example of a app based on the framework can be found [here](src/app.hpp). In order to develop a custom app, usually it is only required to adapt `app.hpp`. Additional source files that need compilation can be added in the [meson application description](meson.build).
+An example of a app based on the framework can be found [here](src/app/sample_app.hpp). In order to develop a custom app, usually it is only required to adapt `app.hpp`. Additional source files that need compilation can be added in the [meson application description](meson.build).
 
-Since it is often useful to have additional classes and tests for them, the testing framework CATCH2 is already included. An example of how to create an module and write tests is available [here](src/sample_module/). It is important to add the subdirectory to the [meson.build](meson.build) file in the root directory.
+Since it is often useful to have additional classes and tests for them, the testing framework CATCH2 is already included. An example of how to create an module and write tests is available [here](src/app/sample_app/sample_module/). It is important to add the subdirectory to the [meson.build](meson.build) file in the root directory.
 
 
 It's also possible to run without using `xhost +` by adding this snippet to the dockerfile:
