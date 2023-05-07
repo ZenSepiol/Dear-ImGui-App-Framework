@@ -41,7 +41,7 @@ docker compose run console meson setup builddir /code --native-file=native.build
 docker compose run console ninja -C builddir
 
 # Run the application
-docker compose run gui builddir/app/sample_app/sample_app
+docker compose run gui builddir/src/app/sample_app/sample_app
 
 # Run tests
 docker compose run console ninja -C builddir test
