@@ -16,6 +16,7 @@ class App : public AppBase<App>
         for (int i = 0; i < 200; ++i)
         {
             busy_threads.push_back(0.f);
+            open_tasks.push_back(0.f);
         }
     }
 
@@ -34,9 +35,6 @@ class App : public AppBase<App>
     // Anything that needs to be called cyclically INSIDE of the main application loop
     void Update()
     {
-        busy_threads.erase(busy_threads.begin());
-        busy_threads.push_back(thread_pool.busy_threads);
-
         if (!ImGui::Begin("Long running task"))
         {
             // Early out if the window is collapsed, as an optimization.
@@ -45,7 +43,7 @@ class App : public AppBase<App>
         }
 
         if (ImGui::Button("Long Calculation"))
-            futures.push_back(thread_pool.submit(std::bind(&App::MyCalculation, this)));
+            futures.push_back(thread_pool.AddTask(std::bind(&App::MyCalculation, this)));
 
         for (auto& future : futures)
         {
@@ -58,6 +56,25 @@ class App : public AppBase<App>
         {
             ImGui::Text("My result is: %i", result);
         }
+        ImGui::End();
+
+        Statistics();
+    }
+
+    void Statistics()
+    {
+        if (!ImGui::Begin("Statistics"))
+        {
+            // Early out if the window is collapsed, as an optimization.
+            ImGui::End();
+            return;
+        }
+
+        busy_threads.erase(busy_threads.begin());
+        busy_threads.push_back(thread_pool.busy_threads);
+
+        open_tasks.erase(open_tasks.begin());
+        open_tasks.push_back(thread_pool.QueueSize());
 
         if (ImPlot::BeginSubplots("", 1, 1, ImVec2(1200, 800)))
         {
@@ -66,12 +83,13 @@ class App : public AppBase<App>
                 ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 5.f);
 
                 ImPlot::SetupAxis(ImAxis_X1, "Frame Number", ImPlotAxisFlags_AutoFit);
-                ImPlot::SetupAxis(ImAxis_Y1, "Busy Threads");
+                ImPlot::SetupAxis(ImAxis_Y1, "Number");
                 ImPlot::SetupAxisLimits(ImAxis_Y1, -1, 10);
 
                 std::vector<float> local_samples(busy_threads.size());
                 std::generate(local_samples.begin(), local_samples.end(), [n = 0]() mutable { return 1.0 * n++; });
                 ImPlot::PlotLine("Busy Threads", local_samples.data(), busy_threads.data(), busy_threads.size());
+                ImPlot::PlotLine("Open Tasks", local_samples.data(), open_tasks.data(), open_tasks.size());
                 ImPlot::EndPlot();
 
                 ImPlot::PopStyleVar(ImPlotStyleVar_LineWeight);
@@ -116,6 +134,7 @@ class App : public AppBase<App>
 
   private:
     std::vector<float> busy_threads;
+    std::vector<float> open_tasks;
 
     std::vector<std::future<int>> futures;
     std::vector<int> results;

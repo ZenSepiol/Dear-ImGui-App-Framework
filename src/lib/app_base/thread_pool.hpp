@@ -11,7 +11,7 @@
 class ThreadPool
 {
   public:
-    ThreadPool(const int size) :  busy_threads(size), threads(std::vector<std::thread>(size)), shutdown_requested(false)
+    ThreadPool(const int size) : busy_threads(size), threads(std::vector<std::thread>(size)), shutdown_requested(false)
     {
         for (size_t i = 0; i < size; ++i)
         {
@@ -21,7 +21,7 @@ class ThreadPool
 
     ~ThreadPool()
     {
-        shutdown();
+        Shutdown();
     }
 
     ThreadPool(const ThreadPool&) = delete;
@@ -31,7 +31,7 @@ class ThreadPool
     ThreadPool& operator=(ThreadPool&&)      = delete;
 
     // Waits until threads finish their current task and shutdowns the pool
-    void shutdown()
+    void Shutdown()
     {
         {
             std::lock_guard<std::mutex> lock(mutex);
@@ -48,26 +48,32 @@ class ThreadPool
         }
     }
 
-    // Submit a function to be executed asynchronously by the pool
     template <typename F, typename... Args>
-    auto submit(F&& f, Args&&... args) -> std::future<decltype(f(args...))>
+    auto AddTask(F&& f, Args&&... args) -> std::future<decltype(f(args...))>
     {
         // Create a function with bounded parameters ready to execute
-        std::function<decltype(f(args...))()> func = std::bind(std::forward<F>(f), std::forward<Args>(args)...);
+        auto func = std::bind(std::forward<F>(f), std::forward<Args>(args)...);
         // Encapsulate it into a shared ptr in order to be able to copy construct / assign
         auto task_ptr = std::make_shared<std::packaged_task<decltype(f(args...))()>>(func);
 
-        // Wrap packaged task into void function
-        std::function<void()> wrapper_func = [task_ptr]() { (*task_ptr)(); };
+        // Wrap the task pointer into a void lambda
+        auto wrapper_func = [task_ptr]() { (*task_ptr)(); };
 
-        // Wake up one thread if its waiting
         {
             std::lock_guard<std::mutex> lock(mutex);
             queue.push(wrapper_func);
+            // Wake up one thread if its waiting
             condition_variable.notify_one();
         }
+
         // Return future from promise
         return task_ptr->get_future();
+    }
+
+    int QueueSize()
+    {
+        std::unique_lock<std::mutex> lock(mutex);
+        return queue.size();
     }
 
   private:
