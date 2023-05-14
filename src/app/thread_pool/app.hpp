@@ -15,7 +15,7 @@ class App : public AppBase<App>
     {
         for (int i = 0; i < 200; ++i)
         {
-            frame_times.push_back(0.f);
+            busy_threads.push_back(0.f);
         }
     }
 
@@ -34,8 +34,8 @@ class App : public AppBase<App>
     // Anything that needs to be called cyclically INSIDE of the main application loop
     void Update()
     {
-        frame_times.erase(frame_times.begin());
-        frame_times.push_back(1.f / ImGui::GetIO().DeltaTime);
+        busy_threads.erase(busy_threads.begin());
+        busy_threads.push_back(thread_pool.busy_threads);
 
         if (!ImGui::Begin("Long running task"))
         {
@@ -66,12 +66,12 @@ class App : public AppBase<App>
                 ImPlot::PushStyleVar(ImPlotStyleVar_LineWeight, 5.f);
 
                 ImPlot::SetupAxis(ImAxis_X1, "Frame Number", ImPlotAxisFlags_AutoFit);
-                ImPlot::SetupAxis(ImAxis_Y1, "Frame Rate");
-                ImPlot::SetupAxisLimits(ImAxis_Y1, 0, 100);
+                ImPlot::SetupAxis(ImAxis_Y1, "Busy Threads");
+                ImPlot::SetupAxisLimits(ImAxis_Y1, -1, 10);
 
-                std::vector<float> local_samples(frame_times.size());
+                std::vector<float> local_samples(busy_threads.size());
                 std::generate(local_samples.begin(), local_samples.end(), [n = 0]() mutable { return 1.0 * n++; });
-                ImPlot::PlotLine("Frame Rate", local_samples.data(), frame_times.data(), frame_times.size());
+                ImPlot::PlotLine("Busy Threads", local_samples.data(), busy_threads.data(), busy_threads.size());
                 ImPlot::EndPlot();
 
                 ImPlot::PopStyleVar(ImPlotStyleVar_LineWeight);
@@ -115,7 +115,7 @@ class App : public AppBase<App>
     }
 
   private:
-    std::vector<float> frame_times;
+    std::vector<float> busy_threads;
 
     std::vector<std::future<int>> futures;
     std::vector<int> results;

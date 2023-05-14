@@ -8,16 +8,14 @@
 #include <utility>
 #include <vector>
 
-#include "thread_save_queue.hpp"
-
 class ThreadPool
 {
   public:
-    ThreadPool(const int n_threads) : m_threads(std::vector<std::thread>(n_threads)), m_shutdown(false)
+    ThreadPool(const int size) :  busy_threads(size), threads(std::vector<std::thread>(size)), shutdown_requested(false)
     {
-        for (size_t i = 0; i < m_threads.size(); ++i)
+        for (size_t i = 0; i < size; ++i)
         {
-            m_threads[i] = std::thread(ThreadWorker(this, i));
+            threads[i] = std::thread(ThreadWorker(this));
         }
     }
 
@@ -36,16 +34,16 @@ class ThreadPool
     void shutdown()
     {
         {
-            std::lock_guard<std::mutex> lock(m_conditional_mutex);
-            m_shutdown = true;
-            m_conditional_lock.notify_all();
+            std::lock_guard<std::mutex> lock(mutex);
+            shutdown_requested = true;
+            condition_variable.notify_all();
         }
 
-        for (size_t i = 0; i < m_threads.size(); ++i)
+        for (size_t i = 0; i < threads.size(); ++i)
         {
-            if (m_threads[i].joinable())
+            if (threads[i].joinable())
             {
-                m_threads[i].join();
+                threads[i].join();
             }
         }
     }
@@ -62,13 +60,11 @@ class ThreadPool
         // Wrap packaged task into void function
         std::function<void()> wrapper_func = [task_ptr]() { (*task_ptr)(); };
 
-        // Enqueue generic wrapper function
-        m_queue.enqueue(wrapper_func);
-
         // Wake up one thread if its waiting
         {
-            std::lock_guard<std::mutex> lock(m_conditional_mutex);
-            m_conditional_lock.notify_one();
+            std::lock_guard<std::mutex> lock(mutex);
+            queue.push(wrapper_func);
+            condition_variable.notify_one();
         }
         // Return future from promise
         return task_ptr->get_future();
@@ -78,54 +74,46 @@ class ThreadPool
     class ThreadWorker
     {
       public:
-        ThreadWorker(ThreadPool* pool, const int id) : m_id(id), m_pool(pool)
+        ThreadWorker(ThreadPool* pool) : thread_pool(pool)
         {
         }
+
         void operator()()
         {
-            std::function<void()> func;
-            bool dequeued;
-            while (!m_pool->m_shutdown)
+            std::unique_lock<std::mutex> lock(thread_pool->mutex);
+            while (!thread_pool->shutdown_requested || (thread_pool->shutdown_requested && !thread_pool->queue.empty()))
             {
-                {
-                    std::unique_lock<std::mutex> lock(m_pool->m_conditional_mutex);
-                    if (m_pool->m_queue.empty())
-                    {
-                        m_pool->m_conditional_lock.wait(lock, [this] {
-                            return this->m_pool->m_shutdown || this->m_pool->m_queue.empty() == false;
-                        });
-                    }
-                    dequeued = m_pool->m_queue.dequeue(func);
-                }
-                if (dequeued)
-                {
-                    func();
-                }
-            }
+                thread_pool->busy_threads--;
+                thread_pool->condition_variable.wait(lock, [this] {
+                    return this->thread_pool->shutdown_requested || !this->thread_pool->queue.empty();
+                });
+                thread_pool->busy_threads++;
 
-            // If the task queue is not empty, continue obtain task from task queue,
-            // the multithread continues execution until the queue is empty
-            while (!m_pool->m_queue.empty())
-            {
+                if (!this->thread_pool->queue.empty())
                 {
-                    std::unique_lock<std::mutex> lock(m_pool->m_conditional_mutex);
-                    dequeued = m_pool->m_queue.dequeue(func);
-                    if (dequeued)
-                    {
-                        func();
-                    }
+                    auto func = thread_pool->queue.front();
+                    thread_pool->queue.pop();
+
+                    lock.unlock();
+                    func();
+                    lock.lock();
                 }
             }
         }
 
       private:
-        int m_id;
-        ThreadPool* m_pool;
+        ThreadPool* thread_pool;
     };
 
-    std::vector<std::thread> m_threads;
-    bool m_shutdown;
-    SafeQueue<std::function<void()>> m_queue;
-    std::mutex m_conditional_mutex;
-    std::condition_variable m_conditional_lock;
+  public:
+    int busy_threads;
+
+  private:
+    mutable std::mutex mutex;
+    std::condition_variable condition_variable;
+
+    std::vector<std::thread> threads;
+    bool shutdown_requested;
+
+    std::queue<std::function<void()>> queue;
 };
