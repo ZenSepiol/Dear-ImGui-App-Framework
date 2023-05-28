@@ -4,7 +4,7 @@ incdir = include_directories('/imgui/backends', '/implot', '/imgui', 'src/lib')
 
 glfw_lib = subproject('glfw').get_variable('glfw_dep')
 gl = dependency('gl')
-catch_lib = subproject('catch2').get_variable('catch2_dep')
+catch_lib = subproject('catch2').get_variable('catch2_with_main_dep')
 
 gui_files = files(
     '/imgui/imgui.cpp',

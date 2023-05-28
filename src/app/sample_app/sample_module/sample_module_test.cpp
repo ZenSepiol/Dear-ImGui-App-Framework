@@ -1,7 +1,5 @@
-#define CATCH_CONFIG_MAIN
-
 #include "sample_module.hpp"
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("Sample module test of truth", "[sample_module]")
 {
