@@ -15,9 +15,12 @@ jobs:
     - name: Install environment
       run: sudo apt-get install -y bash libglfw3 libglfw3-dev xorg-dev libxkbcommon-dev meson clang git cmake libssl-dev cmake
     - name: Install curl
-      run: sudo apt-get install --yes --no-install-recommends wget build-essential libcurl4 && \
-          sh -c "wget -nv https://curl.se/download/curl-7.81.0.tar.gz" && \
-          tar -xvf curl-7.81.0.tar.gz && cd curl-7.81.0 && \
-          ./configure --with-openssl && make && make install
+      run: sudo apt-get install --yes --no-install-recommends wget build-essential libcurl4
+    - name: Wget curl
+      run: wget https://curl.se/download/curl-7.81.0.tar.gz
+    - name: Unpack curl
+      run: tar -xvf curl-7.81.0.tar.gz
+    - name: Install curl
+      run: cd curl-7.81.0 && ./configure --with-openssl && make && make install
     - name: Build tests
       run: meson test -C builddir
