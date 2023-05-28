@@ -27,6 +27,11 @@ apt-get install --yes --no-install-recommends wget build-essential libcurl4 && \
     tar -xvf curl-7.81.0.tar.gz && cd curl-7.81.0 && \
     ./configure --with-openssl && make && make install
 ```
+Additionally, it is necessary to clone Dear ImGui and ImPlot:
+```
+    git clone --depth 1 --branch v1.88 https://github.com/ocornut/imgui.git /imgui
+    git clone --depth 1 --branch v0.14 https://github.com/epezent/implot.git /implot
+```
 
 Useful commands for building and running the application.
 

@@ -22,6 +22,10 @@ jobs:
       run: tar -xvf curl-7.81.0.tar.gz
     - name: Install curl
       run: cd curl-7.81.0 && ./configure --with-openssl && make && sudo make install
+    - name: Clone Dear ImGui
+      run: git clone --depth 1 --branch v1.88 https://github.com/ocornut/imgui.git /imgui
+    - name: Clone ImPlot
+      run: git clone --depth 1 --branch v0.14 https://github.com/epezent/implot.git /implot
     - name: Configure project
       run: meson setup builddir --native-file=native.build
     - name: Build tests
