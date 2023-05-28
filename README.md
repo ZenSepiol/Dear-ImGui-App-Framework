@@ -1,4 +1,4 @@
-![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/ZenSepiol/Dear-ImGui-App-Framework/docker-image.yml?branch=main) <a href="https://www.buymeacoffee.com/zensepiol"><img src="https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png" height="21px"></a>
+<a href="https://www.buymeacoffee.com/zensepiol"><img src="https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png" height="21px"></a> [![Module tests](https://github.com/ZenSepiol/Dear-ImGui-App-Framework/actions/workflows/module-tests.yml/badge.svg)](https://github.com/ZenSepiol/Dear-ImGui-App-Framework/actions/workflows/module-tests.yml) [![Docker Image CI](https://github.com/ZenSepiol/Dear-ImGui-App-Framework/actions/workflows/docker-image.yml/badge.svg)](https://github.com/ZenSepiol/Dear-ImGui-App-Framework/actions/workflows/docker-image.yml)
 
 # Dear-ImGui-App-Framework
 This repository is used to create simple applications based on Dear ImGui. It tries to keep dependencies to a minimum, and offer a fast and easy solution to build C++ apps with GUI.
