@@ -13,10 +13,10 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install environment
-      run: apt-get install -y bash libglfw3 libglfw3-dev xorg-dev libxkbcommon-dev meson clang git cmake libssl-dev cmake
+      run: sudo apt-get install -y bash libglfw3 libglfw3-dev xorg-dev libxkbcommon-dev meson clang git cmake libssl-dev cmake
     - name: Install curl
-      run: apt-get install --yes --no-install-recommends wget build-essential libcurl4 && \
+      run: sudo apt-get install --yes --no-install-recommends wget build-essential libcurl4 && \
           wget https://curl.se/download/curl-7.81.0.tar.gz && \
           tar -xvf curl-7.81.0.tar.gz && cd curl-7.81.0 && \
     - name: Build tests
-      run: ninja -C builddir test
+      run: meson test -C builddir
