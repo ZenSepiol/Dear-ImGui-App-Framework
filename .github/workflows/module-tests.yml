@@ -22,5 +22,7 @@ jobs:
       run: tar -xvf curl-7.81.0.tar.gz
     - name: Install curl
       run: cd curl-7.81.0 && ./configure --with-openssl && make && sudo make install
+    - name: Configure project
+      run: meson setup builddir --native-file=native.build
     - name: Build tests
       run: meson test -C builddir
