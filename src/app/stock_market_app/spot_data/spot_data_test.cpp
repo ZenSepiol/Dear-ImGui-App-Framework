@@ -1,5 +1,5 @@
 #include "spot_data.hpp"
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("CSV parsing", "[spot_data]")
 {
