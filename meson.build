@@ -27,3 +27,5 @@ subdir('src/app/stock_market_app')
 subdir('src/app/tetris')
 subdir('src/app/thread_pool')
 subdir('src/app/tictactoe')
+
+subdir('src/lib/thread_pool')
