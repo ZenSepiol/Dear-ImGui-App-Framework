@@ -51,14 +51,25 @@ class ThreadPool
     template <typename F, typename... Args>
     auto AddTask(F&& f, Args&&... args) -> std::future<decltype(f(args...))>
     {
-        // Create a function with bounded parameters ready to execute
-        auto func = std::bind(std::forward<F>(f), std::forward<Args>(args)...);
-        // Encapsulate it into a shared ptr in order to be able to copy construct / assign
-        auto task_ptr = std::make_shared<std::packaged_task<decltype(f(args...))()>>(func);
+#if __cpp_lib_move_only_function
+        std::packaged_task<decltype(f(args...))()> task(std::forward<F>(f), std::forward<Args>(args)...);
+        auto future       = task.get_future();
+        auto wrapper_func = [task = move(task)]() mutable { std::move(task)(); };
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            queue.push(std::move(wrapper_func));
+            // Wake up one thread if its waiting
+            condition_variable.notify_one();
+        }
 
-        // Wrap the task pointer into a void lambda
+        // Return future from promise
+        return future;
+#else
+
+        auto task_ptr = std::make_shared<std::packaged_task<decltype(f(args...))()>>(std::forward<F>(f),
+                                                                                     std::forward<Args>(args)...);
+
         auto wrapper_func = [task_ptr]() { (*task_ptr)(); };
-
         {
             std::lock_guard<std::mutex> lock(mutex);
             queue.push(wrapper_func);
@@ -68,6 +79,7 @@ class ThreadPool
 
         // Return future from promise
         return task_ptr->get_future();
+#endif
     }
 
     int QueueSize()
@@ -97,7 +109,11 @@ class ThreadPool
 
                 if (!this->thread_pool->queue.empty())
                 {
+#if __cpp_lib_move_only_function
+                    auto func = std::move(thread_pool->queue.front());
+#else
                     auto func = thread_pool->queue.front();
+#endif
                     thread_pool->queue.pop();
 
                     lock.unlock();
@@ -121,5 +137,9 @@ class ThreadPool
     std::vector<std::thread> threads;
     bool shutdown_requested;
 
+#if __cpp_lib_move_only_function
+    std::queue<std::move_only_function<void()>> queue;
+#else
     std::queue<std::function<void()>> queue;
+#endif
 };

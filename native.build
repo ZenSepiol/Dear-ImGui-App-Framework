@@ -4,11 +4,12 @@
 c_std = 'c17'
 cpp_std = 'c++20'
 optimization = '3'
+cpp_args = '-std=c++23'
 
 [binaries]
-c = '/usr/bin/clang'
-cpp = '/usr/bin/clang++'
+c = '/usr/bin/gcc'
+cpp = '/usr/bin/g++-12'
 
 [cmake]
-CMAKE_C_COMPILER    = '/usr/bin/clang'
-CMAKE_CXX_COMPILER  = '/usr/bin/clang++'
+CMAKE_C_COMPILER    = '/usr/bin/gcc'
+CMAKE_CXX_COMPILER  = '/usr/bin/g++-12'
