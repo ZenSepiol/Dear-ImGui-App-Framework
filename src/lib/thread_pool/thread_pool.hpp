@@ -52,7 +52,7 @@ class ThreadPool
     auto AddTask(F&& f, Args&&... args) -> std::future<decltype(f(args...))>
     {
 #if __cpp_lib_move_only_function
-        std::packaged_task<decltype(f(args...))()> task(std::forward<F>(f), std::forward<Args>(args)...);
+        std::packaged_task<decltype(f(args...))()> task(std::bind(std::forward<F>(f), std::forward<Args>(args)...));
         auto future       = task.get_future();
         auto wrapper_func = [task = move(task)]() mutable { std::move(task)(); };
         {
@@ -66,8 +66,8 @@ class ThreadPool
         return future;
 #else
 
-        auto task_ptr = std::make_shared<std::packaged_task<decltype(f(args...))()>>(std::forward<F>(f),
-                                                                                     std::forward<Args>(args)...);
+        auto task_ptr = std::make_shared<std::packaged_task<decltype(f(args...))()>>(
+            std::bind(std::forward<F>(f), std::forward<Args>(args)...));
 
         auto wrapper_func = [task_ptr]() { (*task_ptr)(); };
         {
