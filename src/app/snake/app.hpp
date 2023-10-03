@@ -1,5 +1,4 @@
 #include "app_base/app_base.hpp"
-#include "implot_internal.h"
 #include <deque>
 #include <iostream>
 #include <iterator>
